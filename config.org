@@ -4,8 +4,7 @@
 #+OPTIONS: toc:2
 
 * PROGRAMS TO LOAD
-
-** PACKAGE MANAGEMENT (MELPA + GNU ELPA)
+** ESSENTIAL
 #+begin_src emacs-lisp
   (require 'package)
   ;;(setq package-enable-at-startup nil) ;; don’t load everything
@@ -33,33 +32,37 @@
 
 ** GENERAL SETTINGS
 #+begin_src emacs-lisp
-    ;; no startup screen
-    (setq inhibit-startup-message t)    ;; no splash
-    ;; Line numbering
-    (column-number-mode)
-    (global-display-line-numbers-mode 1)
-    (recentf-mode 1)
+      ;; no startup screen
+      (setq inhibit-startup-message t)    ;; no splash
+      ;; Line numbering
+      (column-number-mode)
+      (global-display-line-numbers-mode 1)
+      (recentf-mode 1)
 
-    ;; Better sugestion matching words
-    (setq indo-enable-flex-matching t)
-    (setq ido-everywhere t)
-    (ido-mode 1)
+      ;; Interactive file and buffer selection
+      ;;(setq ido-enable-flex-matching t)
+      ;;(setq ido-everywhere t)
+      ;;(ido-mode -1)
 
-    ;; Switching the buffer presentation:  list-buffers C-x C-b to M x iBuffer 
-    (defalias 'list-buffers 'ibuffer)
+      ;; Switching the buffer presentation:  list-buffers C-x C-b to M x iBuffer 
+      (defalias 'list-buffers 'ibuffer)
 
-    ;; Switching the buffer presentation:  list-buffers C-x C-b to M x iBuffer but in another window
-    ;;(defalias 'list-buffers 'ibuffer-other-window)
+      ;; Switching the buffer presentation:  list-buffers C-x C-b to M x iBuffer but in another window
+      ;;(defalias 'list-buffers 'ibuffer-other-window)
 
-    ;; Rembers how window state (C c arrow) left <-- undo right--> redo
-    (winner-mode 1)
+      ;; Rembers how window state (C c arrow) left <-- undo right--> redo
+      (winner-mode 1)
 
-    ;; Move to next window  Shift arrow
-    (windmove-default-keybindings)
+      ;; Move to next window  Shift arrow
+      (windmove-default-keybindings)
+
+    (use-package windresize
+      :ensure t
+       )
 
     ;; Moving between window, better than C-x o
     (use-package ace-window
-     ;; :demand t
+      ;; :demand t
       :ensure t
       :init
       (progn
@@ -68,41 +71,136 @@
          '(aw-leading-char-face ((t (:height 5.0 :foreground "#ff6c6b"))))) ;; 
         ))
 
-    ;; so swiper can use it
-    (use-package counsel
-      :ensure t
-     )
+    ;; Enhanced commands built on Ivy(swiper)
+    ;;(use-package counsel
+     ;;  :ensure t
+     ;; )
 
-    (use-package ivy
-      :ensure t
-      :diminish (ivy-mode)
-      :bind (("C-x b" . ivy-switch-buffer))
-      :config
-      (ivy-mode 1)
-      (setq ivy-use-virtual-buffers t)
-      (setq ivy-display-style 'fancy)
-    )
+    ;;Completion interface
+    ;;(use-package ivy
+    ;;  :ensure t
+    ;;  :diminish (ivy-mode)
+    ;;  :bind (("C-x b" . ivy-switch-buffer))
+    ;;  :config
+    ;;  (ivy-mode -1)
+    ;;  (setq ivy-use-virtual-buffers t)
+    ;;  (setq ivy-display-style 'fancy)
+    ;;    )
 
     ;; For search like C-s C-r
-    (use-package swiper
-      :demand t
+    ;(use-package swiper
+    ;  :demand t
+    ;  :ensure t
+    ;  :bind (("C-s" . swiper)
+    ;         ("C-r" . swiper)
+    ;         ("M-x" . counsel-M-x))
+    ;;  :config
+    ;;   (progn
+    ;;    (ivy-mode -1)
+    ;;    (setq ivy-use-virtual-buffers t)
+    ;;    (setq ivy-display-style 'fancy)
+    ;;    ;; Enable this if you want `swiper' to use it:
+    ;;    ;; (setopt search-default-mode #'char-fold-to-regexp)
+    ;;    (global-set-key (kbd "C-c k f") 'counsel-find-file)
+    ;;  ))
+
+
+      ;;(use-package all-the-icons
+      ;;  :ensure t
+      ;;  :if (display-graphic-p))
+
+      (use-package nerd-icons
       :ensure t
-      :bind (("C-s" . swiper)
-             ("C-r" . swiper)
-             ("M-x" . counsel-M-x))
-      :config
-       (progn
-        (ivy-mode 1)
-        (setq ivy-use-virtual-buffers t)
-        (setq ivy-display-style 'fancy)
-        ;; Enable this if you want `swiper' to use it:
-        ;; (setopt search-default-mode #'char-fold-to-regexp)
-        (global-set-key (kbd "C-c k f") 'counsel-find-file)
-      ))
+      :demand t)
+
+
+
+       (use-package dashboard
+  :ensure t
+  :after nerd-icons
+  :demand t
+
+  :init
+  (progn
+    ;; Recent files and projects
+    (setq dashboard-items '((recents  . 10)
+                            (projects . 10)))
+
+    ;; Shortcuts and icons
+    (setq dashboard-show-shortcuts t)
+    (setq dashboard-set-heading-icons t)
+    (setq dashboard-set-file-icons t)
+    (setq dashboard-set-navigator t)
+    (setq dashboard-projects-backend 'projectile)
+    (setq dashboard-icon-type 'nerd-icons)
+
+    ;; Custom heading icons
+    (setq dashboard-heading-icons
+          '((recents  . "nf-oct-history")
+            (projects . "nf-oct-rocket")))
+
+    ;; Startup banner
+    (setq dashboard-startup-banner
+          (expand-file-name "./images/xemacs_color.png"
+                            user-emacs-directory))
+
+    ;; Banner dimensions
+    (setq dashboard-image-banner-max-height 600)
+    (setq dashboard-image-banner-max-width 600)
+
+    ;; Center Dashboard content
+    (setq dashboard-center-content t))
+
+  :config
+  ;; Initialize Dashboard
+  (dashboard-setup-startup-hook)
+
+  ;; Remove any previously registered version of our hook.
+  (remove-hook 'server-after-make-frame-hook
+               #'my/dashboard-refresh-on-client-frame)
+
+  ;; Define the corrected function.
+  ;; server-after-make-frame-hook passes NO arguments.
+  (defun my/dashboard-refresh-on-client-frame ()
+    "Refresh Dashboard when opening a graphical Emacs client frame."
+    (when (display-graphic-p)
+      (when (get-buffer "*dashboard*")
+        (with-current-buffer "*dashboard*"
+          (dashboard-refresh-buffer)))))
+
+  ;; Register the corrected function.
+  (add-hook 'server-after-make-frame-hook
+            #'my/dashboard-refresh-on-client-frame))
+
+
+
+      (use-package vertico
+        :ensure t 
+        :demand t
+        :config
+        (vertico-mode 1))
+
+      ;; Better completion matching
+    (use-package orderless
+    :ensure t
+    :config
+    (setq completion-styles '(orderless basic)))
+    (ivy-mode -1) ;; orderless does work well with ivy 
+
+  ;; Marginalia adds useful information next to completion candidates in Emacs
+  (use-package marginalia
+    :ensure t
+    :demand t
+    :config
+    (marginalia-mode 1)) 
+
+
+  ;; Persist minibuffer history across Emacs sessions
+  (savehist-mode 1)
 #+end_src
 
 #+RESULTS:
-: counsel-M-x
+: t
 
 ** HELPER PACKAGES
 #+begin_src emacs-lisp
@@ -124,147 +222,214 @@
   (setq which-key-idle-delay 0.5)
 
   (global-eldoc-mode 1)
- 
+
+  (use-package pdf-tools
+    :ensure t
+    :config
+    (pdf-tools-install))
+
+  (use-package auctex
+    :ensure t
+    :defer t)
+
 #+end_src
 
 #+RESULTS:
 : t
 
-** CUSTOM SET VARIABLES
-#+begin_src emacs-lisp
-          (custom-set-variables
-         ;; custom-set-variables was added by Custom.
-         ;; If you edit it by hand, you could mess it up, so be careful.
-         ;; Your init file should contain only one such instance.
-         ;; If there is more than one, they won't work right.
-         '(package-selected-packages
-           '(auctex iedit auto-complete-c-headers org-bullets dracula-theme solarized-theme markdown-mode magit levenshtein flycheck-pyflakes cmake-mode modern-cpp-font-lock auto-complete yasnippet-snippets pyvenv use-package pyenv-mode py-yapf jedi elpy company-jedi))
-         '(safe-local-variable-values
-           '((eval setq-local flycheck-clang-include-path
-                   (list
-                    (concat root "include")
-                    (concat root "src"))))))
-        (custom-set-faces
-         ;; custom-set-faces was added by Custom.
-         ;; If you edit it by hand, you could mess it up, so be careful.
-         ;; Your init file should contain only one such instance.
-         ;; If there is more than one, they won't work right.
-         )
-
-      (require 'auto-complete-config)
-
-      (require 'yasnippet)
-      (yas-global-mode)
-
-
-      (use-package pdf-tools
-        :ensure t
-        :config
-        (pdf-tools-install))
-
-    (use-package auctex
-      :ensure t
-      :defer t)
-
-  
-#+end_src
 ** CODING
 *** GENERIC
 #+begin_src emacs-lisp
-    (global-set-key (kbd "<f5>") 'compile)
+      (global-set-key (kbd "<f5>") 'compile)
 
-    ;; auto-complete must be first if not it break stuffs for reason
-    (use-package auto-complete
+      (use-package flycheck
         ;;:demand t
         :ensure t
+        :hook(glsl-mode . flycheck-mode)
+        :init
+        (global-flycheck-mode t)
         :config
-        (ac-config-default)
-        (global-auto-complete-mode t))
+        (setq flycheck-gcc-language-standard "c++17"
+              flycheck-gcc-include-path '("/usr/include"
+                                          "/usr/local/include"
+                                          "/usr/local/cuda/targets/x86_64-linux/include"
+                                          "/usr/include/c++/11"
+                                          "/usr/include/x86_64-linux-gnu/c++/11"
+                                          )))
 
-    (use-package flycheck
+        (require 'flycheck-pyflakes) 
+        ;; Company (completion)
+        (use-package company
+        ;; :demand t
+         :ensure  t
+         :hook (after-init . global-company-mode)
+         :config
+         (setq company-idle-delay 0.2
+                company-minimum-prefix-length 1))
+
+
+      ;; Snippets
+      (add-to-list 'load-path "~/.config/emacs/plugins/yasnippet")
+      (use-package yasnippet
+        ;;:demand t
+        :ensure t
+        :init
+        (yas-global-mode 1))
+
+      (yas-reload-all)
+      (add-hook 'prog-mode-hook #'yas-minor-mode)
+
+      (use-package yasnippet-snippets
+        :ensure t)
+
+
+      ;; magit
+      ;; key bindings
+      ;;(global-set-key (kbd "C-x g") 'magit-status)
+      ;;install magit
+      (use-package magit
+        :ensure t
+        :bind (("C-x g" . magit-status)))
+
+      (setq lsp-disabled-clients '(pylsp))
+
+        (use-package glsl-mode
+        :mode ("\\.glsl\\'" "\\.vert\\'" "\\.frag\\'" "\\.geom\\'" "\\.comp\\'"))
+
+      (use-package lsp-mode
+        :ensure t
+        :init
+        (setq lsp-keymap-prefix "C-c l")
+        :hook ((c++-mode . lsp)
+               (c-mode . lsp)
+               (python-mode . lsp)
+               (cmake-mode . lsp)
+               (glsl-mode . lsp))
+        :custom
+        ((lsp-enable-indentation nil)
+         (lsp-enable-on-type-formatting nil)
+         (setq lsp-prefer-capf t))
+       :commands lsp lsp-deferred)
+
+
+       ;; for fancy sideline, popup documentation, VScode-like
+      (use-package lsp-ui :commands lsp-ui-mode)
+      ;; provides on type completion alternative of xref-apropos using ivy
+      (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+      ;; for various tree based UI controls
+      (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+
+       (use-package cmake-mode
+         :ensure t)
+
+
+      (with-eval-after-load 'lsp-mode
+      ;; Register cuda-mode as a valid C++ variant for clangd
+      (add-to-list 'lsp-language-id-configuration '(cuda-mode . "cuda"))
+      ;; Enable lsp execution automatically when entering cuda-mode
+      (add-hook 'cuda-mode-hook #'lsp-deferred))
+
+      (use-package multiple-cursors
+      :ensure t
       :demand t
+      :bind
+      (("C-M-j"   . mc/mark-all-dwim)
+       ("C-M-c"   . mc/edit-lines)
+       ("C-M-/"   . mc/mark-all-like-this)
+       ("C-M-,"   . mc/mark-previous-like-this)
+       ("C-M-."   . mc/mark-next-like-this)
+       ("C-M-<"   . mc/skip-to-previous-like-this)
+       ("C-M->"   . mc/skip-to-next-like-this)))
+
+    (delete-selection-mode 1)
+    (use-package expand-region
       :ensure t
-      :init
-      (global-flycheck-mode t)
+      :bind
+      (("C-M-l" . er/expand-region)))
+
+
+    ;; debuging
+    (use-package gud
+      :ensure nil
       :config
-      (setq flycheck-gcc-language-standard "c++17"
-            flycheck-gcc-include-path '("/usr/include"
-                                        "/usr/local/include"
-                                        "/usr/include/c++/11"
-                                        "/usr/include/x86_64-linux-gnu/c++/11"
-                                        )))
+      (setq gdb-many-windows t)
+      (setq gdb-show-main t)
+      (seqt gdb-restore-window-configuration-after-quit t))
 
-      (require 'flycheck-pyflakes) 
-      ;; Company (completion)
-      (use-package company
-       :demand t
-       :ensure  t
-       :hook (after-init . global-company-mode)
-       :config
-       (setq company-idle-delay 0.2
-              company-minimum-prefix-length 1)
-       (global-company-mode t))
+      ;; for identation
+      (setq-default indent-tabs-mode nil)
+      (setq-default tab-width 4)
 
+      (setq tab-always-indent nil)
 
-      (add-hook 'after-init-hook 'global-company-mode)
-
-    ;; Snippets
-
-    (use-package yasnippet
-      :demand t
+  ;; since i do lazy loading the :bind is necessary?
+    (use-package move-text
       :ensure t
-      :init
-      (yas-global-mode 1)
-      :config
-     (add-to-list 'load-path
-                  "~/.config/emacs/plugins/yasnippet"))
-    ;; magit
-    ;; key bindings
-    (global-set-key (kbd "C-x g") 'magit-status)
-    ;;install magit
-    (use-package magit
-      :ensure t
-      :bind (("C-x g" . magit-status)))
+      :bind
+      (("M-<up>" . move-text-up)
+       ("M-<down>" . move-text-down)))
 
-    (use-package lsp-mode
-      :ensure t
-      :init
-     (setq lsp-keymap-prefix "C-c l")
-     :hook
-     ((c++-mode . lsp)
-     (c-mode . lsp)
-     (python-mode . lsp)
-     (cmake-mode . lsp))
-     :commands lsp lsp-deferred)
+  (use-package hideshow
+    :ensure nil
+    :hook ((c++-mode . hs-minor-mode)
+           (c-mode . hs-minor-mode)
+           (python-mode . hs-minor-mode)))
 
-     ;; for fancy sideline, popup documentation, VScode-like
-    (use-package lsp-ui :commands lsp-ui-mode)
-    ;; provides on type completion alternative of xref-apropos using ivy
-    (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
-    ;; for various tree based UI controls
-    (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+
+  (use-package perspective
+    :ensure t
+    :bind
+        ("C-x C-b" . persp-list-buffers)         ; or use a nicer switcher, see below
+    :custom
+        (persp-mode-prefix-key (kbd "C-c M-p"))  ; pick your own prefix key here
+    :init
+        (persp-mode))
 
 #+end_src
 
 #+RESULTS:
+: persp-list-buffers
 
 *** CONDA ENVIRONMENTS
 #+begin_src emacs-lisp
 
-  (use-package pyvenv
+   ; wrong because it using conda env instead, 
+   ;(use-package pyvenv
+   ;  :config
+   ;  (setenv "WORKON_HOME" "/media/kuntima/SSD-Kuntima2/miniconda3/envs/")
+   ;  (pyvenv-mode 1)
+
+     ;; Optional helper functions to quickly switch environments
+   ;  (defun pyvenv-activate-cs285 () (interactive) (pyvenv-activate "cs285"))
+   ;  (defun pyvenv-activate-d2l () (interactive) (pyvenv-activate "d2l"))
+   ;  (defun pyvenv-activate-ptorch () (interactive) (pyvenv-activate "ptorch"))
+   ;  (defun pyvenv-activate-py () (interactive) (pyvenv-activate "py"))
+   ;  (defun pyvenv-activate-tf () (interactive) (pyvenv-activate "tf"))
+   ;  (defun pyvenv-activate-universe () (interactive) (pyvenv-activate "universe")))
+
+
+  (use-package exec-path-from-shell
+    :ensure t
     :config
-    (setenv "WORKON_HOME" "/media/kuntima/SSD-Kuntima2/miniconda3/envs/")
-    (pyvenv-mode 1)
+    (setq exec-path-from-shell-variables '("PATH"))
+        (exec-path-from-shell-initialize))
 
-    ;; Optional helper functions to quickly switch environments
-    (defun pyvenv-activate-cs285 () (interactive) (pyvenv-activate "cs285"))
-    (defun pyvenv-activate-d2l () (interactive) (pyvenv-activate "d2l"))
-    (defun pyvenv-activate-ptorch () (interactive) (pyvenv-activate "ptorch"))
-    (defun pyvenv-activate-py () (interactive) (pyvenv-activate "py"))
-    (defun pyvenv-activate-tf () (interactive) (pyvenv-activate "tf"))
-    (defun pyvenv-activate-universe () (interactive) (pyvenv-activate "universe")))
+  (use-package conda
+    :ensure t
+    :config
+    (conda-env-initialize-interactive-shells)
+    (conda-env-initialize-eshell)
+    (setq conda-anaconda-home "/media/kuntima/SSD-Kuntima2/miniconda3/")
+    (setq conda-env-home-directory "/media/kuntima/SSD-Kuntima2/miniconda3/"))
 
-
+  ;(conda-env-activate "base")
+  ;(conda-env-activate "cs285")
+  ;(conda-env-activate "d2l")
+  ;(conda-env-activate "ptorch")
+  ;(conda-env-activate "py")
+  ;(conda-env-activate "tf")
+  ;(conda-env-activate "universe")
+  ;(conda-env-activate "updated")
 #+end_src
 
 #+RESULTS:
@@ -272,113 +437,95 @@
 
 *** PYTHON
 #+begin_src emacs-lisp
-  (use-package elpy
-    :demand t
-    :ensure t
-    :config
-    (elpy-enable))
 
-  (use-package jedi
-    :demand t
-    :ensure t
-    :init
-      (add-hook 'python-mode-hook 'jedi:setup)
-      (add-hook 'python-mode-hook 'jedi:ac-setup)
-    :config (setq jedi:complete-on-dot t))
+  (use-package lsp-pyright
+  :ensure t
+  :hook (python-mode . (lambda ()
+                         (require 'lsp-pyright)
+                         (lsp))))  ;; or (lsp-deferred)
 
-  (use-package company-jedi
-    :after company
-    :hook (python-mode . (lambda ()
-                           (add-to-list 'company-backends 'company-jedi))))
+
+
+  
 #+end_src
 
 #+RESULTS:
-| (lambda nil (add-to-list 'company-backends 'company-jedi)) | jedi:ac-setup | jedi:setup | elpy-mode |
+| (lambda nil (require 'lsp-pyright) (lsp)) | lsp |
 
 *** C/C++
 #+begin_src emacs-lisp
-   ;; Modern C++ syntax highlighting
-      (use-package modern-cpp-font-lock
-         :ensure t
-         :config
-         (modern-c++-font-lock-global-mode)
-         :hook (c++-mode . modern-cpp-font-lock-mode))
 
-     ;; eglot
-    (use-package eglot
-      :ensure t
-      :demand t
-      :config
-      ;; Use clangd 21.1.0
-      (add-to-list 'eglot-server-programs
-      '((c++-mode c-mode) "/usr/bin/clangd"))
-      :hook
-      ((c++-mode-hook . eglot-ensure)
-       (c-mode-hook . eglot-ensure))
-      :bind
-      ((:map eglot-mode-map
-             ("C-c e r" . eglot-rename)
-             ("C-c e a" . eglot-code-actions)
-             ("C-c e f" . eglot-format)))
-     )
+         ;; eglot
+        (use-package eglot
+          :ensure nil
+          :config
+          ;; Use clangd 21.1.0
+          (add-to-list 'eglot-server-programs
+          '((c++-mode c-mode cuda-mode) "/usr/bin/clangd"))
+          ;;:hook
+          ;;((c++-mode . eglot-ensure)
+          ;; (c-mode . eglot-ensure))
+          :bind
+          ((:map eglot-mode-map
+                 ("C-c e r" . eglot-rename)
+                 ("C-c e a" . eglot-code-actions)
+                 ("C-c e f" . eglot-format)))
+         )
 
 
-
-     (use-package company-irony
-       :demand t
-       :ensure  t
-       :config
-       (add-to-list 'company-backends 'company-irony)
-       )
-
-     (use-package irony
-       :demand t
-       :ensure t 
-       :config
-       (add-hook 'c++-mode-hook 'irony-mode)
-       (add-hook 'c-mode-hook 'irony-mode)
-       (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
-
-     (use-package irony-eldoc
-       :ensure t
-       :config
-       (add-hook 'irony-mode-hook #'irony-eldoc))
+       (use-package cc-mode
+       :ensure nil
+       :mode (("\\.cpp\\'" . c++-mode)
+              ("\\.hpp\\'" . c++-mode)
+              ("\\.cu\\'"  . c++-mode)
+              ("\\.cuh\\'" . c++-mode)))
 
 
-      (use-package cmake-ide
-      :demand t
-      :commands (cmake-ide-compile cmake-ide-setup)
-      :config
-      (setq cmake-ide-flags-c++ '("-std=c++17")))
-
-    (use-package cuda-mode
-      :mode "\\.cu\\'")
+     (use-package modern-cpp-font-lock                                                                                                                                               
+       :ensure t                                                                                                                                                                     
+       :hook (c++-mode . modern-c++-font-lock-mode))                                                                                                                                 
 
 
-  ;; Company backend for C headers
-  ;; -----------------------------
-  (use-package company-c-headers
-    :demand t
-    :ensure t
-    :after company 
-    :config
-    (add-to-list 'company-backends 'company-c-headers 'yasnippet )
-    ;; Set system include paths for GCC
-    (setq company-c-headers-path-system
-          '("/usr/include"
-            "/usr/local/include"
-            "/usr/include/c++/11"
-            "/usr/include/x86_64-linux-gnu/c++/11")))
+     (electric-indent-mode -1)
+     ;;(use-package cuda-mode
+     ;;:ensure t
+     ;;:mode (("\\.cu\\'" . cuda-mode)
+     ;;      ("\\.hpp\\'" . cuda-mode))
+     ;;:init
+    ;; Force Emacs to prioritize cuda-mode for hpp files over any built-in C++ magic hooks
+    ;;(add-to-list 'auto-mode-alist '("\\.hpp\\'" . cuda-mode)))
+  ;;  (add-to-list 'auto-mode-alist '("\\.cu\\'". c++-mode))
 
 
-
-
-  (use-package cmake-mode
-    :ensure t)
 
 #+end_src
 
 #+RESULTS:
+
+** Projectile
+#+begin_src  emacs-lisp
+  (projectile-mode +1)
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+#+end_src
+
+#+RESULTS:
+: projectile-command-map
+
+** Treemacs
+#+begin_src emacs-lisp
+    (use-package treemacs
+      :demand t
+      :ensure t
+      :bind
+      (:map global-map
+            ([f8] . treemacs)
+            ("C-<f8>" . treemacs-select-window))
+      :config
+       (setq treemacs-is-never-other-window t))
+#+end_src
+
+#+RESULTS:
+: treemacs-select-window
 
 ** ORG MODE
 #+begin_src emacs-lisp
@@ -430,38 +577,119 @@
 
 #+RESULTS:
 : python3
-** Projectile
-#+begin_src  emacs-lisp
-  (projectile-mode +1)
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-#+end_src
-
-#+RESULTS:
-: projectile-command-map
-
-** Treemacs
-#+begin_src emacs-lisp
-    (use-package treemacs
-      :demand t
-      :ensure t
-      :bind
-      (:map global-map
-            ([f8] . treemacs)
-            ("C-<f8>" . treemacs-select-window))
-      :config
-       (setq treemacs-is-never-other-window t))
-#+end_src
-
-#+RESULTS:
-: treemacs-select-window
-
 ** LATEX
 #+begin_src emacs-lisp
-(use-package auctex
-  :mode ("\\.tex\\'" . LaTeX-mode)
-  :hook ((LaTeX-mode . prettify-symbols-mode)
-         (LaTeX-mode . flyspell-mode)))
+  (use-package auctex
+    :mode ("\\.tex\\'" . LaTeX-mode)
+    :hook ((LaTeX-mode . prettify-symbols-mode)
+           (LaTeX-mode . flyspell-mode)))
+
+
+  (with-eval-after-load 'ox-latex
+    (add-to-list 'org-latex-classes
+             '("org-plain-latex"
+               "\\documentclass{article}
+           [NO-DEFAULT-PACKAGES]
+           [PACKAGES]
+           [EXTRA]"
+               ("\\section{%s}" . "\\section*{%s}")
+               ("\\subsection{%s}" . "\\subsection*{%s}")
+               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+               ("\\paragraph{%s}" . "\\paragraph*{%s}")
+               ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
+
+
+  (defun my/latex-side-by-side ()
+  "Display the current LaTeX source and its PDF side by side."
+  (interactive)
+  (let* ((tex-buffer (current-buffer))
+         (pdf-file (concat (file-name-sans-extension
+                            (buffer-file-name))
+                           ".pdf")))
+    (unless (file-exists-p pdf-file)
+      (user-error "PDF not found. Compile your LaTeX file first"))
+
+    (delete-other-windows)
+    (split-window-right)
+
+    ;; Keep LaTeX source on the left.
+    (set-window-buffer (selected-window) tex-buffer)
+
+    ;; Open PDF on the right.
+    (other-window 1)
+    (find-file pdf-file)
+
+    ;; Return focus to LaTeX.
+    (other-window -1)))
+
+(with-eval-after-load 'latex
+  ;; Open PDF side by side
+  (define-key LaTeX-mode-map (kbd "C-x 3")
+              #'my/latex-side-by-side)
+
+  ;; Restore AUCTeX compilation
+  (define-key LaTeX-mode-map (kbd "C-c C-c")
+              #'TeX-command-master))
+
+;; Automatically refresh PDF after LaTeX compilation
+(with-eval-after-load 'tex
+  (add-hook 'TeX-after-compilation-finished-functions
+            #'TeX-revert-document-buffer))
 #+end_src
+
+#+RESULTS:
+| TeX-revert-document-buffer |
+
+** ORG & LATEX :
+#+begin_src emacs-lisp
+;; ==========================================
+;; Spell checking — French / English
+;; ==========================================
+
+(use-package ispell
+  :ensure nil
+  :custom
+  (ispell-program-name "hunspell")
+  (ispell-dictionary "fr_FR"))
+
+(use-package flyspell
+  :ensure nil
+  :hook
+  (LaTeX-mode . flyspell-mode)
+  (org-mode . flyspell-mode)
+  (text-mode . flyspell-mode)
+  :bind
+  ("C-c s f" . my/spell-french)
+  ("C-c s e" . my/spell-english)
+  ("C-c s t" . my/spell-toggle-language))
+
+(defun my/spell-french ()
+  "Use French spelling dictionary."
+  (interactive)
+  (ispell-change-dictionary "fr_FR")
+  (when flyspell-mode (flyspell-buffer)))
+
+(defun my/spell-english ()
+  "Use English spelling dictionary."
+  (interactive)
+  (ispell-change-dictionary "en_US")
+  (when flyspell-mode (flyspell-buffer)))
+
+(defun my/spell-toggle-language ()
+  "Toggle French and English dictionaries."
+  (interactive)
+  (if (equal (or ispell-local-dictionary ispell-dictionary)
+             "fr_FR")
+      (my/spell-english)
+    (my/spell-french)))
+
+;;(global-unset-key (kbd "C-c s f"))
+;;(global-unset-key (kbd "C-c s e"))
+;;(global-unset-key (kbd "C-c s t"))
+#+end_src
+
+#+RESULTS:
+: my/spell-toggle-language
 
 ** THEMES
 #+begin_src emacs-lisp
@@ -495,35 +723,18 @@
 #+RESULTS:
 | /home/kuntima/.local/bin | /usr/local/sbin | /usr/local/bin | /usr/sbin | /usr/bin | /sbin | /bin | /usr/games | /usr/local/games | /snap/bin |
 
-** NOT ORGANIZE
-#+BEGIN_SRC emacs-lisp
-
-  ;; installing some stuff
-  ;; list the packages you want // some of those I already have
-  (defvar package-list)
-  (setq package-list '(auto-complete auto-complete-c-headers cmake-mode cmake-ide company company-irony 
-                             company-irony-c-headers  flycheck conda 
-                             flycheck-irony flycheck-pyflakes
-                             let-alist levenshtein markdown-mode pkg-info 
-                             popup  seq solarized-theme dracula-theme yasnippet))
-  ;; fetch the list of packages available
-  (unless package-archive-contents
-    (package-refresh-contents))
-  ;; install the missing packages
-  (dolist (package package-list)
-    (unless (package-installed-p package)
-      (package-install package)))
-#+END_SRC
-
 ** KEYBINDS
 #+BEGIN_SRC emacs-lisp
+ 
   (global-set-key (kbd "C-c k a") 'org-agenda)
   (global-set-key (kbd "C-c k c") 'calendar)
-  (global-set-key (kbd "C-t") 'term)
+  (global-set-key (kbd "C-c k t") 'term)
+  (global-set-key (kbd "C-c k w r") 'windresize)
+
 #+END_SRC
 
 #+RESULTS:
-: term
+: windresize
 
 ** AGENDA PATH
 #+BEGIN_SRC emacs-lisp
